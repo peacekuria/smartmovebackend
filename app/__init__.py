@@ -1,6 +1,7 @@
 from flask import Flask
 from app.config import Config
 from app.extensions import db, migrate, cors
+from app.utils.errors import register_error_handlers
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -34,5 +35,8 @@ def create_app(config_class=Config):
     app.register_blueprint(inventory_bp)
     app.register_blueprint(maps_bp)
     app.register_blueprint(notification_bp)
+
+    # Register error handlers
+    register_error_handlers(app)
 
     return app
