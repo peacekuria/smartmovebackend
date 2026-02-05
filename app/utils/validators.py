@@ -1,4 +1,7 @@
 import re
+from functools import wraps
+from flask import request
+from .response import error
 
 class Validator:
     @staticmethod
@@ -54,3 +57,22 @@ class Validator:
         if missing_fields:
             return False, f"Missing required fields: {', '.join(missing_fields)}"
         return True, ""
+
+def validate_request(*required_fields):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not request.is_json:
+                return error("Request must be JSON", 415) # Use 415 for Unsupported Media Type
+            
+            data = request.get_json()
+            
+            # Use the existing validator method
+            is_valid, message = Validator.validate_required_fields(data, required_fields)
+            
+            if not is_valid:
+                return error(message, 400) # 400 for Bad Request
+            
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
