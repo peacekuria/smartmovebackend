@@ -18,7 +18,7 @@ class Booking(BaseModel):
     pickup_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'), nullable=False)
     dropoff_address_id = db.Column(db.Integer, db.ForeignKey('addresses.id'), nullable=False)
     
-    booking_time = db.Column(db.DateTime, nullable=False)
+    booking_time = db.Column(db.DateTime(timezone=True), nullable=False)
     status = db.Column(db.Enum(BookingStatus), default=BookingStatus.PENDING, nullable=False)
     
     user = db.relationship('User', backref='bookings')
