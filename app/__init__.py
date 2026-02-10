@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from app.config import Config
 from app.extensions import db, migrate, cors
 from app.utils.errors import register_error_handlers
@@ -43,6 +43,7 @@ def create_app(config_class=Config):
     register_error_handlers(app)
 
     # Health check endpoint
+    @app.route('/health', methods=['GET'])
     from flask import (
         jsonify,
     )  # Import jsonify here or at the top if not already present
