@@ -1,4 +1,5 @@
-from flask import jsonify
+from flask import jsonify, current_app
+import traceback
 
 class APIError(Exception):
     """Base class for custom API exceptions."""
@@ -50,24 +51,31 @@ def register_error_handlers(app):
 
     @app.errorhandler(400)
     def handle_bad_request(e):
+        current_app.logger.error(f"Bad Request: {e}")
         return jsonify({"status": "error", "message": "Bad Request"}), 400
 
     @app.errorhandler(401)
     def handle_unauthorized(e):
+        current_app.logger.error(f"Unauthorized: {e}")
         return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     @app.errorhandler(403)
     def handle_forbidden(e):
+        current_app.logger.error(f"Forbidden: {e}")
         return jsonify({"status": "error", "message": "Forbidden"}), 403
 
     @app.errorhandler(404)
     def handle_not_found(e):
+        current_app.logger.error(f"Not Found: {e}")
         return jsonify({"status": "error", "message": "Not Found"}), 404
 
     @app.errorhandler(405)
     def handle_method_not_allowed(e):
+        current_app.logger.error(f"Method Not Allowed: {e}")
         return jsonify({"status": "error", "message": "Method Not Allowed"}), 405
 
     @app.errorhandler(500)
     def handle_internal_server_error(e):
+        # Log the full traceback for internal server errors
+        current_app.logger.exception(f"Internal Server Error: {e}\n{traceback.format_exc()}")
         return jsonify({"status": "error", "message": "Internal Server Error"}), 500
