@@ -16,7 +16,7 @@ RUN apt-get update \
 # Install Python dependencies
 COPY requirements.txt ./
 COPY requirements-dev.txt ./
-RUN pip install --upgrade pip && pip install -r requirements.txt -r requirements-dev.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy application source (for builder if needed, but primarily for understanding context)
 COPY . /app
@@ -52,4 +52,4 @@ USER appuser
 EXPOSE 8000
 
 # Use $PORT if provided by the environment (Railway), fallback to 8000
-CMD sh -c "flask db upgrade && gunicorn run:app --bind 0.0.0.0:${PORT:-8000} --workers 3 --log-file -"
+CMD gunicorn wsgi:app --bind 0.0.0.0:${PORT:-8000} --workers 3 --log-file -
