@@ -25,6 +25,7 @@ def create_app(config_class=Config):
     from app.routes.inventory import inventory_bp
     from app.routes.maps import maps_bp
     from app.routes.notification import notification_bp
+    from app.routes.payments import payment_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
@@ -36,23 +37,26 @@ def create_app(config_class=Config):
     app.register_blueprint(inventory_bp)
     app.register_blueprint(maps_bp)
     app.register_blueprint(notification_bp)
+    app.register_blueprint(payment_bp, url_prefix="/api/payments")
 
     # Register error handlers
     register_error_handlers(app)
 
     # Health check endpoint for Render/load balancers
-    @app.route('/health', methods=['GET'])
+    @app.route("/health", methods=["GET"])
     def health_check():
         """Basic health check - returns 200 if app is running."""
         return jsonify({"status": "ok"}), 200
 
-    @app.route('/health/ready', methods=['GET'])
+    @app.route("/health/ready", methods=["GET"])
     def readiness_check():
         """Readiness check - verifies database connectivity."""
         try:
-            db.session.execute(db.text('SELECT 1'))
+            db.session.execute(db.text("SELECT 1"))
             return jsonify({"status": "ready", "database": "connected"}), 200
         except Exception as e:
-            return jsonify({"status": "not ready", "database": "disconnected", "error": str(e)}), 503
+            return jsonify(
+                {"status": "not ready", "database": "disconnected", "error": str(e)}
+            ), 503
 
     return app

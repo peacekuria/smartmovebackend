@@ -1,25 +1,29 @@
-import math
+import googlemaps
+from flask import current_app
 
 
 class GoogleMapsService:
     @staticmethod
-    def get_distance(lat1, lon1, lat2, lon2):
+    def get_road_distance(origin, destination):
         """
-        Calculate the great circle distance between two points
-        on the earth (specified in decimal degrees)
+        Calculates driving distance and duration.
+        'origin' and 'destination' can be addresses or (lat, lng) tuples.
         """
-        # Convert decimal degrees to radians
-        lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+        gmaps = googlemaps.Client(key=current_app.config["GOOGLE_MAPS_API_KEY"])
 
-        # Haversine formula
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-        a = (
-            math.sin(dlat / 2) ** 2
-            + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
-        )
-        c = 2 * math.asin(math.sqrt(a))
+        try:
+            # result is a dictionary containing rows and elements
+            matrix = gmaps.distance_matrix(origin, destination, mode="driving")
 
-        # Radius of earth in kilometers is 6371
-        km = 6371 * c
-        return round(km, 2)
+            if matrix["status"] == "OK":
+                element = matrix["rows"][0]["elements"][0]
+                if element["status"] == "OK":
+                    return {
+                        "distance_km": element["distance"]["value"] / 1000,
+                        "duration_text": element["duration"]["text"],
+                        "status": "success",
+                    }
+            return {"status": "error", "message": "Could not calculate distance"}
+
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
