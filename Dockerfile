@@ -1,4 +1,4 @@
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -22,7 +22,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . /app
 
 # --- Production Stage ---
-FROM python:3.11-slim as runtime
+FROM python:3.11-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -51,5 +51,8 @@ USER appuser
 
 EXPOSE 8000
 
-# Use $PORT if provided by the environment (Railway), fallback to 8000
-CMD gunicorn wsgi:app --bind 0.0.0.0:${PORT:-8000} --workers 3 --log-file -
+# Set Flask app for potential CLI usage
+ENV FLASK_APP=wsgi:app
+
+# Use gunicorn config file for consistent settings
+CMD ["gunicorn", "wsgi:app", "--config", "gunicorn.conf.py"]
