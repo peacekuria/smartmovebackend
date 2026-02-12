@@ -111,6 +111,36 @@ To run all tests:
 pytest
 ```
 
+## Security Best Practices
+
+### Environment Variables
+- **NEVER commit `.env` files** to version control - they are already in `.gitignore`
+- All sensitive keys go in `.env` files only
+- Use `.env.example` as a template with placeholder values
+- Rotate API keys periodically and if any key is compromised
+
+### API Key Protection
+1. **Google Maps API Key**:
+   - Restrict by HTTP referrer in Google Cloud Console
+   - Enable only required APIs: Maps JavaScript, Geocoding, Places, Distance Matrix
+   - Set daily quota limits appropriate for your usage
+
+2. **MPESA Credentials**:
+   - Keep `MPESA_CONSUMER_KEY` and `MPESA_CONSUMER_SECRET` confidential
+   - These provide access to your M-Pesa business account
+   - Never expose them in client-side code
+
+3. **Database URL**:
+   - For production, use PostgreSQL with SSL
+   - Use strong passwords and connection pooling
+   - Restrict database user permissions to minimum required
+
+### Production Deployment
+- Use a secrets management service in production (e.g., HashiCorp Vault, AWS Secrets Manager)
+- Set environment variables in your hosting platform (Railway, Heroku, etc.)
+- Enable HTTPS/TLS for all communications
+- Use a web application firewall (WAF)
+
 ## Celery Background Tasks
 
 To run Celery workers for background tasks:

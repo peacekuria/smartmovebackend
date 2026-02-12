@@ -9,7 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 def get_database_uri():
     """Get database URI with postgres:// to postgresql:// conversion for SQLAlchemy 1.4+."""
     database_url = os.environ.get('DATABASE_URL')
-    if database_url is None:
+    if database_url is None or database_url.strip() == '':
         # Default to SQLite for local development
         return 'sqlite:///' + os.path.join(basedir, '..', 'app.db')
     if database_url.startswith('postgres://'):
@@ -36,4 +36,10 @@ class Config:
     MPESA_SHORTCODE = os.environ.get('MPESA_SHORTCODE')
     MPESA_PASSKEY = os.environ.get('MPESA_PASSKEY')
     CALLBACK_URL = os.environ.get('CALLBACK_URL')
+
+    # Google Maps Configuration
+    GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
+    GOOGLE_MAPS_GEOCODING_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+    GOOGLE_MAPS_DISTANCE_MATRIX_URL = 'https://maps.googleapis.com/maps/api/distancematrix/json'
+    GOOGLE_MAPS_PLACES_URL = 'https://maps.googleapis.com/maps/api/place'
 
