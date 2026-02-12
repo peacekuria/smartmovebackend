@@ -11,6 +11,10 @@ class AuthService:
         password = data.get('password')
         role_str = data.get('role', 'customer')
         
+        # Normalize 'client' to 'customer' for internal consistency
+        if role_str == 'client':
+            role_str = 'customer'
+        
         # Safely convert role string to UserRole enum
         try:
             role = UserRole(role_str)
@@ -21,7 +25,12 @@ class AuthService:
         if User.query.filter_by(email=email).first():
             raise Exception("User with this email already exists.")
 
-        new_user = User(email=email, role=role)
+        new_user = User(
+            email=email, 
+            role=role,
+            first_name=data.get('first_name'),
+            last_name=data.get('last_name')
+        )
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -42,5 +51,5 @@ class AuthService:
                 current_app.config.get('SECRET_KEY'),
                 algorithm='HS256'
             )
-            return token
+            return token, user
         raise Exception("Invalid email or password.")

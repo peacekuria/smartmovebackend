@@ -20,7 +20,7 @@ def register():
 def login():
     data = request.get_json()
     try:
-        token = AuthService.login_user(data['email'], data['password'])
-        return success({'token': token})
+        token, user = AuthService.login_user(data['email'], data['password'])
+        return success({'token': token, 'user': user.to_dict()})
     except Exception as e:
         return error_response(str(e), 401)

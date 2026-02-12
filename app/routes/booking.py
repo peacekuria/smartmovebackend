@@ -25,3 +25,12 @@ def get_booking(current_user, booking_id):
         return success(booking.to_dict())
     except Exception as e:
         return error_response(str(e), 404)
+
+@booking_bp.route('/<int:id>/tracker', methods=['GET'])
+@jwt_required
+def get_booking_tracker(current_user, id):
+    try:
+        tracker_data = BookingService.get_mover_location(id)
+        return success(tracker_data)
+    except Exception as e:
+        return error_response(str(e))

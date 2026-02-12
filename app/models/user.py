@@ -11,6 +11,8 @@ class User(BaseModel):
     __tablename__ = 'users'
 
     email = db.Column(db.String(120), unique=True, nullable=False)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
     password_hash = db.Column(db.String(128))
     role = db.Column(db.Enum(UserRole), default=UserRole.CUSTOMER, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())

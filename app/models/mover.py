@@ -10,4 +10,9 @@ class Mover(BaseModel):
     service_area = db.Column(db.String(255))
     approved = db.Column(db.Boolean, default=False)
     
+    # Real-time tracking fields
+    last_lat = db.Column(db.Float, nullable=True)
+    last_lng = db.Column(db.Float, nullable=True)
+    last_location_update = db.Column(db.DateTime, nullable=True)
+    
     user = db.relationship('User', backref=db.backref('mover', uselist=False))

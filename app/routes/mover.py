@@ -25,3 +25,20 @@ def get_availability(current_user):
         return success(availability)
     except Exception as e:
         return error_response(str(e))
+
+@mover_bp.route('/location', methods=['POST'])
+@jwt_required
+@roles_required('mover')
+def update_location(current_user):
+    data = request.get_json()
+    lat = data.get('lat')
+    lng = data.get('lng')
+    
+    if lat is None or lng is None:
+        return error_response("Latitude and Longitude are required", 400)
+    
+    try:
+        MoverService.update_mover_location(current_user.mover.id, lat, lng)
+        return success(message="Location updated")
+    except Exception as e:
+        return error_response(str(e))
