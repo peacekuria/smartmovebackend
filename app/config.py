@@ -11,7 +11,9 @@ def get_database_uri():
     database_url = os.environ.get('DATABASE_URL')
     if database_url is None or database_url.strip() == '':
         # Default to SQLite for local development
-        return 'sqlite:///' + os.path.join(basedir, '..', 'app.db')
+        # Ensure path is always relative to this config file
+        db_path = os.path.join(basedir, '..', 'app.db')
+        return 'sqlite:///' + os.path.abspath(db_path)
     if database_url.startswith('postgres://'):
         # Render, Heroku, Railway use postgres:// but SQLAlchemy requires postgresql://
         return database_url.replace('postgres://', 'postgresql://', 1)
